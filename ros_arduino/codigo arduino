@@ -1,0 +1,90 @@
+//Motores
+int motor1pin1 = 2;
+int motor1pin2 = 3;
+
+int motor2pin1 = 6;
+int motor2pin2 = 7;
+//JoyStick
+int VRx = A0;
+int VRy = A1;
+int SW = 2;
+int xPosition = 0;
+int yPosition = 0;
+int SW_state = 0;
+int mapX = 0;
+int mapY = 0;
+
+void setup() {
+  //JoyStick
+  Serial.begin(9600); 
+  pinMode(VRx, INPUT);
+  pinMode(VRy, INPUT);
+  pinMode(SW, INPUT_PULLUP); 
+  //Motores
+  pinMode(motor1pin1, OUTPUT);
+  pinMode(motor1pin2, OUTPUT);
+  pinMode(motor2pin1, OUTPUT);
+  pinMode(motor2pin2, OUTPUT);
+}
+
+void loop() {
+  xPosition = analogRead(VRx);
+  yPosition = analogRead(VRy);
+  SW_state = digitalRead(SW);
+  mapX = map(xPosition, 0, 1023, -512, 512);
+  mapY = map(yPosition, 0, 1023, -512, 512);
+  
+  Serial.print("X: ");
+  Serial.print(mapX);
+  Serial.print(" | Y: ");
+  Serial.print(mapY);
+  Serial.print(" | Button: ");
+  Serial.println(SW_state);
+
+  //delay(100);
+  if(mapY<-200){
+    //adelante
+    Serial.print("adelante");
+    digitalWrite(motor1pin1, HIGH);
+    digitalWrite(motor1pin2, LOW);
+  
+    digitalWrite(motor2pin1, HIGH);
+    digitalWrite(motor2pin2, LOW);
+  }
+  if(mapY>200){
+    //atrás
+    Serial.print("atras");
+    digitalWrite(motor1pin1, LOW);
+    digitalWrite(motor1pin2, HIGH);
+  
+    digitalWrite(motor2pin1, LOW);
+    digitalWrite(motor2pin2, HIGH);
+  }
+  if(mapX<-200){
+    //gira izquierda
+    Serial.print("izquierda");
+    digitalWrite(motor1pin1, HIGH);
+    digitalWrite(motor1pin2, LOW);
+  
+    digitalWrite(motor2pin1, LOW);
+    digitalWrite(motor2pin2, HIGH);
+  }
+  if(mapX>200){
+    //gira derecha
+    Serial.print("derecha");
+    digitalWrite(motor1pin1, LOW);
+    digitalWrite(motor1pin2, HIGH);
+  
+    digitalWrite(motor2pin1, HIGH);
+    digitalWrite(motor2pin2, LOW);
+  }
+  if((mapY>-200)&&(mapY<200)&&(mapX>-200)&&(mapX<200)){
+    //stop
+    Serial.print("stop");
+    digitalWrite(motor1pin1, LOW);
+    digitalWrite(motor1pin2, LOW);
+  
+    digitalWrite(motor2pin1, LOW);
+    digitalWrite(motor2pin2, LOW);
+  }
+}
